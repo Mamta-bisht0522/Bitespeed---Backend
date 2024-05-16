@@ -59,21 +59,21 @@ const contactController = {
   //   },
 
   //get all contact api by using mongodb
-  getAllPrimaryContacts: async (req, res) => {
-    try {
-      const primaryContacts = await Contact.find({
-        linkPrecedence: req.query.linkPrecedence,
-      });
-      res.status(200).json({
-        totalCount: primaryContacts.length,
-        primaryContacts: primaryContacts,
-      });
-    } catch (error) {
-      res.status(500).json({
-        error: error.message,
-      });
-    }
-  },
+  // getAllPrimaryContacts: async (req, res) => {
+  //   try {
+  //     const primaryContacts = await Contact.find({
+  //       linkPrecedence: req.query.linkPrecedence,
+  //     });
+  //     res.status(200).json({
+  //       totalCount: primaryContacts.length,
+  //       primaryContacts: primaryContacts,
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       error: error.message,
+  //     });
+  //   }
+  // },
 
   //create contact api by using mysql
   createContact: (req, res) => {
@@ -166,8 +166,48 @@ const contactController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  getAllContactsByLinkPrecedence: async (req, res) => {
+    try {
+      const linkPrecedence = req.query.linkPrecedence;
+      if(linkPrecedence){
+      connection.query(
+        "SELECT * FROM customer_contacts where linkPrecedence=?",
+        [linkPrecedence],
+        (err, allContacts) => {
+          if (err) {
+            return res.status(500).json({
+              message: "error while retriving all contacts",
+            });
+          } else {
+            return res.status(200).json({
+              message: "all contacts retrived successfully",
+              data: allContacts,
+            });
+          }
+        }
+      );
+    }else {
+        connection.query(
+          "SELECT * FROM customer_contacts",
+          (err, allContacts) => {
+            if (err) {
+              return res.status(500).json({
+                message: "error while retriving all contacts",
+              });
+            } else {
+              return res.status(200).json({
+                message: "all contacts retrived successfully",
+                data: allContacts,
+              });
+            }
+          }
+        );
+    }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
-
-
 
 module.exports = contactController;
