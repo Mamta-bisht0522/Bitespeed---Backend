@@ -167,27 +167,28 @@ const contactController = {
     }
   },
 
+  //get all contact api by using mysql
   getAllContactsByLinkPrecedence: async (req, res) => {
     try {
       const linkPrecedence = req.query.linkPrecedence;
-      if(linkPrecedence){
-      connection.query(
-        "SELECT * FROM customer_contacts where linkPrecedence=?",
-        [linkPrecedence],
-        (err, allContacts) => {
-          if (err) {
-            return res.status(500).json({
-              message: "error while retriving all contacts",
-            });
-          } else {
-            return res.status(200).json({
-              message: "all contacts retrived successfully",
-              data: allContacts,
-            });
+      if (linkPrecedence) {
+        connection.query(
+          "SELECT * FROM customer_contacts where linkPrecedence=?",
+          [linkPrecedence],
+          (err, allContacts) => {
+            if (err) {
+              return res.status(500).json({
+                message: "error while retriving all contacts",
+              });
+            } else {
+              return res.status(200).json({
+                message: "all contacts retrived successfully",
+                data: allContacts,
+              });
+            }
           }
-        }
-      );
-    }else {
+        );
+      } else {
         connection.query(
           "SELECT * FROM customer_contacts",
           (err, allContacts) => {
@@ -203,7 +204,7 @@ const contactController = {
             }
           }
         );
-    }
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
