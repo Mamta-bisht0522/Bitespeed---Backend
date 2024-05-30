@@ -1,5 +1,5 @@
 const Contact = require("../models/contact.model");
-const connection = require("../config/mysqldb.config");
+const connection = require("../config/mysql.config");
 const contactController = {
   //create contact api by using mongodb
   //   createContact: async (req, res) => {
@@ -76,6 +76,7 @@ const contactController = {
   // },
 
   //create contact api by using mysql
+  //need to add the functionality secondary contact should have the linkedId of first inserted primary contact
   createContact: (req, res) => {
     try {
       const { email, mobileNumber } = req.body;
@@ -212,3 +213,12 @@ const contactController = {
 };
 
 module.exports = contactController;
+
+
+
+
+
+
+
+
+
