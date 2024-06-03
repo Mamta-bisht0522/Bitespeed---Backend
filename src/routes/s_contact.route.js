@@ -1,13 +1,18 @@
 const router = require("express").Router();
 const userController = require("../controllers/s_contact.controller");
-const { createUser, getAllUsers, getUserById, updateUserById, deleteUserById } =
-  userController;
+const {
+  createContact,
+  getAllContacts,
+  getContactById,
+  updateContactById,
+  deleteContactById,
+} = userController;
 
-router.route("/").post(createUser).get(userController.getAllUsers);
+router.route("/").post(createContact).get(userController.getAllContacts);
 router
   .route("/:id")
-  .get(getUserById)
-  .patch(updateUserById)
-  .delete(deleteUserById);
+  .get(getContactById)
+  .patch(updateContactById)
+  .delete(deleteContactById);
 
 module.exports = router;

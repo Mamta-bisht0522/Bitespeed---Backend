@@ -1,44 +1,35 @@
-const User = require("../models/s_contact.model");
+const Contact = require("../models/s_contact.model");
 const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 
-const userController = {
-  createUser: async (req, res) => {
+const ContactController = {
+  createContact: async (req, res) => {
     try {
-      const { firstName, lastName, email, password, phone } = req.body;
-      const user = await User.findOne({
+      // const { firstName, lastName, email, password, phoneNumber } = req.body;
+      const { email, phoneNumber } = req.body;
+
+      const contact = await Contact.findOne({
         where: {
-          [Op.or]: [{ email: email }, { phone: phone }],
+          [Op.or]: [{ email: email }, { phoneNumber: phoneNumber }],
         },
+        order: [["createdAt", "ASC"]],
       });
 
-      if (user) {
-        const newUser = await User.create({
-          firstName: firstName.toLowerCase(),
-          lastName: lastName.toLowerCase(),
-          email: email,
-          password: await bcrypt.hash(password, 10),
-          phone: phone,
-          linkedId: user.id,
-        });
-        res.status(201).json({
-          message: "new user created successfully",
-          data: newUser,
-        });
-      } else {
-        const newUser = await User.create({
-          firstName: firstName.toLowerCase(),
-          lastName: lastName.toLowerCase(),
-          email: email,
-          password: await bcrypt.hash(password, 10),
-          phone: phone,
-          linkedId: null,
-        });
-        res.status(201).json({
-          message: "new user created successfully",
-          data: newUser,
-        });
-      }
+      const contactData = {
+        // firstName: firstName.toLowerCase(),
+        // lastName: lastName.toLowerCase(),
+        // password: await bcrypt.hash(password, 10),
+        email: email,
+        phoneNumber: phoneNumber,
+        linkedId: contact ? contact.id : null,
+        linkPrecedence: contact ? "secondary" : "primary",
+      };
+
+      const newContact = await Contact.create(contactData);
+      return res.status(201).json({
+        message: "new Contact created successfully",
+        data: newContact,
+      });
     } catch (error) {
       res.status(500).json({
         error: error.message,
@@ -46,12 +37,12 @@ const userController = {
     }
   },
 
-  getAllUsers: async (req, res) => {
+  getAllContacts: async (req, res) => {
     try {
-      // const allUsers = await User.findAll();
-      const [results] = await User.sequelize.query("select * from users");
+      // const allContacts = await Contact.findAll();
+      const [results] = await Contact.sequelize.query("select * from Contacts");
       res.status(200).json({
-        message: "All user retrived successfully",
+        message: "All Contact retrived successfully",
         data: results,
       });
     } catch (error) {
@@ -60,16 +51,16 @@ const userController = {
       });
     }
   },
-  getUserById: async (req, res) => {
+  getContactById: async (req, res) => {
     try {
-      const user = await User.findOne({
+      const contact = await Contact.findOne({
         where: {
           id: req.params.id,
         },
       });
       res.status(200).json({
-        message: "user retrived successfully",
-        data: user,
+        message: "Contact retrived successfully",
+        data: contact,
       });
     } catch (error) {
       res.status(500).json({
@@ -77,16 +68,16 @@ const userController = {
       });
     }
   },
-  updateUserById: async (req, res) => {
+  updateContactById: async (req, res) => {
     try {
-      const updatedUser = await User.update(req.body, {
+      const updatedContact = await Contact.update(req.body, {
         where: {
           id: req.params.id,
         },
       });
       res.status(200).json({
-        message: "user by id updated successfully",
-        data: updatedUser,
+        message: "Contact by id updated successfully",
+        data: updatedContact,
       });
     } catch (error) {
       res.status(500).json({
@@ -94,15 +85,15 @@ const userController = {
       });
     }
   },
-  deleteUserById: async (req, res) => {
+  deleteContactById: async (req, res) => {
     try {
-      await User.destroy({
+      await Contact.destroy({
         where: {
           id: req.params.id,
         },
       });
       res.status(200).json({
-        message: "user deleted successfully",
+        message: "Contact deleted successfully",
       });
     } catch (error) {
       res.status(500).json({
@@ -112,4 +103,4 @@ const userController = {
   },
 };
 
-module.exports = userController;
+module.exports = ContactController;
