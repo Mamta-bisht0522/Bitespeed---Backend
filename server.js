@@ -1,22 +1,13 @@
-const express = require("express");
-const app = express();
-const dotenv = require("dotenv");
-dotenv.config();
-
-const mysqlconnection = require("./src/config/mysql.config");
-const mongoConnection=require('./src/config/mongodb.config');
-const sequelize = require("./src/config/sequelize.config");
-mongoConnection();
-
-mysqlconnection.connect((err) => {
-  if (err) throw err;
-  console.log(`MySQL Connected on ${process.env.MYSQL_DB_PORT}`);
-});
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use('/',require('./src/routes/contact.route'))
-app.use('/user',require('./src/routes/s_contact.route'))
-
-const PORT = process.env.PORT || 8081;
-app.listen(PORT, () => console.log(`server is running on PORT ${PORT}`));
+"use strict";
+// import express, { Express, Request, Response , Application } from 'express';
+// import dotenv from 'dotenv';
+// //For env File 
+// dotenv.config();
+// const app: Application = express();
+// const port = process.env.PORT || 8000;
+// app.get('/', (req: Request, res: Response) => {
+//   res.send('Welcome to Express & TypeScript Server');
+// });
+// app.listen(port, () => {
+//   console.log(`Server is Fire at http://localhost:${port}`);
+// });
