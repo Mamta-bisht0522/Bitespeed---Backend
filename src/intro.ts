@@ -154,6 +154,9 @@ console.log(newUser.firstFunc())
 console.log(newUser.secondFunc(4))
 
 
+
+
+
 export {}
 
 

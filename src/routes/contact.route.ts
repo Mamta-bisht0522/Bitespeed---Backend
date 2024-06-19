@@ -1,5 +1,6 @@
-const router = require("express").Router();
-const contactController = require("../controllers/contact.controller");
+import express from "express";
+const router =express.Router();
+import contactController from "../controllers/contact.controller";
 const {
   createContact,
   // getAllPrimaryContacts
@@ -8,4 +9,4 @@ const {
 
 router.route("/").post(createContact).get(getAllContactsByLinkPrecedence);
 
-module.exports = router;
+export default router

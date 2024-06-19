@@ -1,14 +1,14 @@
-const Contact = require("../models/s_contact.model");
-const { Op } = require("sequelize");
-const bcrypt = require("bcrypt");
+import Contact from "../models/s_contact.model";
+import { Request, Response } from 'express';
+import { Op } from "sequelize";
+import bcrypt from "bcrypt";
 
 const ContactController = {
-  createContact: async (req, res) => {
+  createContact: async (req: Request, res: Response) => {
     try {
-      // const { firstName, lastName, email, password, phoneNumber } = req.body;
-      const { email, phoneNumber } = req.body;
+      const { firstName, lastName, email, password, phoneNumber } = req.body;
 
-      const contact = await Contact.findOne({
+      const existingContact = await Contact.findOne({
         where: {
           [Op.or]: [{ email: email }, { phoneNumber: phoneNumber }],
         },
@@ -16,42 +16,49 @@ const ContactController = {
       });
 
       const contactData = {
-        // firstName: firstName.toLowerCase(),
-        // lastName: lastName.toLowerCase(),
-        // password: await bcrypt.hash(password, 10),
+        firstName: firstName.toLowerCase(),
+        lastName: lastName.toLowerCase(),
         email: email,
         phoneNumber: phoneNumber,
-        linkedId: contact ? contact.id : null,
-        linkPrecedence: contact ? "secondary" : "primary",
+        password: await bcrypt.hash(password, 10),
+        linkedId: existingContact ? existingContact.id : null,
+        linkPrecedence: existingContact ? "secondary" : "primary",
       };
 
       const newContact = await Contact.create(contactData);
       return res.status(201).json({
-        message: "new Contact created successfully",
+        message: "New contact created successfully",
         data: newContact,
       });
-    } catch (error) {
+    } catch (err) {
+        const error = err as Error;
+      return res.status(500).json({
+        error: error.message,
+      });
+    }
+  },
+
+  getAllContacts: async (req: Request, res: Response) => {
+    try {
+      if (!Contact.sequelize) {
+        throw new Error('Sequelize instance is not available');
+      }
+
+      const [results] = await Contact.sequelize.query('SELECT * FROM Contacts');
+      res.status(200).json({
+        message: 'All Contacts retrieved successfully',
+        totalCount : results.length,
+        data: results,
+      });
+    } catch (err) {
+      const error = err as Error;
       res.status(500).json({
         error: error.message,
       });
     }
   },
 
-  getAllContacts: async (req, res) => {
-    try {
-      // const allContacts = await Contact.findAll();
-      const [results] = await Contact.sequelize.query("select * from Contacts");
-      res.status(200).json({
-        message: "All Contact retrived successfully",
-        data: results,
-      });
-    } catch (error) {
-      res.status(500).json({
-        error: error.message,
-      });
-    }
-  },
-  getContactById: async (req, res) => {
+  getContactById: async (req: Request, res: Response) => {
     try {
       const contact = await Contact.findOne({
         where: {
@@ -62,13 +69,15 @@ const ContactController = {
         message: "Contact retrived successfully",
         data: contact,
       });
-    } catch (error) {
+    } catch (err) {
+      const error=err as Error
       res.status(500).json({
         error: error.message,
       });
     }
   },
-  updateContactById: async (req, res) => {
+
+  updateContactById: async (req: Request, res: Response)=> {
     try {
       const updatedContact = await Contact.update(req.body, {
         where: {
@@ -79,13 +88,15 @@ const ContactController = {
         message: "Contact by id updated successfully",
         data: updatedContact,
       });
-    } catch (error) {
+    } catch (err) {
+      const error =err as Error
       res.status(500).json({
         error: error.message,
       });
     }
   },
-  deleteContactById: async (req, res) => {
+  
+  deleteContactById: async (req: Request, res: Response) => {
     try {
       await Contact.destroy({
         where: {
@@ -95,7 +106,8 @@ const ContactController = {
       res.status(200).json({
         message: "Contact deleted successfully",
       });
-    } catch (error) {
+    } catch (err) {
+      const error =err as Error
       res.status(500).json({
         error: error.message,
       });
@@ -103,4 +115,4 @@ const ContactController = {
   },
 };
 
-module.exports = ContactController;
+export default ContactController;

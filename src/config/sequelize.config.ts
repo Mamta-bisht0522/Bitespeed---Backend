@@ -1,6 +1,7 @@
-const { Sequelize } = require('sequelize');
+import  {Sequelize}  from 'sequelize';
+// const {Sequelize}=require("sequelize")
 
-const sequelize = new Sequelize('contacts', 'root', 'mysql@2024', {
+export const sequelize = new Sequelize('contacts', 'root', '', {
   host: 'localhost',
   dialect: 'mysql'
 });
@@ -13,4 +14,5 @@ try {
 }
 
 
-module.exports=sequelize
+ export default sequelize
+// module.exports= sequelize
